@@ -339,11 +339,11 @@ async function getUserIdFromAccessToken(
     }
 }
 
-export function attemptTokenLoginForSiopv2(loginToken: string,
-                                           defaultDeviceDisplayName?: string,
-                                           fragmentAfterLogin?: string,
+export function attemptTokenLoginForSiopv2(
+    loginToken: string,
+    defaultDeviceDisplayName?: string,
+    fragmentAfterLogin?: string,
 ): Promise<boolean> {
-
     const homeserver = localStorage.getItem(SSO_HOMESERVER_URL_KEY);
     const identityServer = localStorage.getItem(SSO_ID_SERVER_URL_KEY) ?? undefined;
 

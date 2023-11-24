@@ -26,7 +26,8 @@ import {
     MatrixClient,
     SSOFlow,
     SSOAction,
-    RegisterResponse, ILoginFlow,
+    RegisterResponse,
+    ILoginFlow,
 } from "matrix-js-sdk/src/matrix";
 import React, { Fragment, ReactNode } from "react";
 import classNames from "classnames";
@@ -135,7 +136,6 @@ interface IState {
     params: Record<string, any> | undefined;
 }
 
-
 // todo: move to proper place
 export interface SIOPv2Flow extends ILoginFlow {
     type: "m.login.siopv2";
@@ -157,15 +157,15 @@ interface SIOPv2AccountCreation extends SIOPv2UriParameters {
 }
 
 const createSiopv2Uri = (parameters: SIOPv2AccountCreation): string => {
-    const uri = new URL("siopv2://")
+    const uri = new URL("siopv2://");
     uri.search = new URLSearchParams({
         client_id: parameters.client_id,
         redirect_uri: parameters.redirect_uri,
         client_metadata_uri: parameters.client_metadata_uri,
-        request_uri: parameters.request_uri
-    }).toString()
-    return uri.toString()
-}
+        request_uri: parameters.request_uri,
+    }).toString();
+    return uri.toString();
+};
 
 export default class Registration extends React.Component<IProps, IState> {
     private readonly loginLogic: Login;
@@ -276,7 +276,7 @@ export default class Registration extends React.Component<IProps, IState> {
         this.loginLogic.setDelegatedAuthentication(delegatedAuthentication);
 
         let ssoFlow: SSOFlow | undefined;
-        let siopv2Flow: SIOPv2Flow | undefined
+        let siopv2Flow: SIOPv2Flow | undefined;
         let oidcNativeFlow: OidcNativeFlow | undefined;
         try {
             const loginFlows = await this.loginLogic.getFlows(true);
@@ -639,9 +639,9 @@ export default class Registration extends React.Component<IProps, IState> {
             }
 
             if (this.state.siopv2Flow && this.state.params && this.state.params["m.login.siopv2"]) {
-                const siopv2 = this.state.params["m.login.siopv2"] as SIOPv2AccountCreation
-                const pollingUri = siopv2.polling_uri as string
-                const qrData = createSiopv2Uri(siopv2)
+                const siopv2 = this.state.params["m.login.siopv2"] as SIOPv2AccountCreation;
+                const pollingUri = siopv2.polling_uri as string;
+                const qrData = createSiopv2Uri(siopv2);
 
                 return (
                     <QRCodeGenerator
@@ -650,8 +650,7 @@ export default class Registration extends React.Component<IProps, IState> {
                         completionForSiopv2={this.props.completionForSiopv2}
                     />
                 );
-
-            }else{
+            } else {
                 return (
                     <React.Fragment>
                         {ssoSection}

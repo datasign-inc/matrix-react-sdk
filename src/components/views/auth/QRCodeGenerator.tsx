@@ -14,10 +14,10 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-import React, { Component, ReactNode } from 'react';
-import QRCode from 'qrcode.react';
+import React, { Component, ReactNode } from "react";
+import QRCode from "qrcode.react";
 
-import {_t} from "../../../languageHandler";
+import { _t } from "../../../languageHandler";
 
 interface IProps {
     renderingData: string;
@@ -45,10 +45,10 @@ export default class QRCodeGenerator extends Component<IProps, IState> {
     }
 
     public componentWillUnmount(): void {
-        this.stopPolling
+        this.stopPolling;
     }
 
-    private stopPolling(): void  {
+    private stopPolling(): void {
         if (this.pollingIntervalId) {
             clearInterval(this.pollingIntervalId);
         }
@@ -60,19 +60,19 @@ export default class QRCodeGenerator extends Component<IProps, IState> {
         this.pollingIntervalId = window.setInterval(async () => {
             try {
                 if (!this.doPolling) {
-                    return
+                    return;
                 }
                 const response = await fetch(this.props.pollingUri);
 
                 if (response.ok) {
                     const data = await response.json();
                     if (data && data?.login_token) {
-                        this.stopPolling()
-                        this.props.completionForSiopv2(data.login_token)
+                        this.stopPolling();
+                        this.props.completionForSiopv2(data.login_token);
                     }
                 }
             } catch (error) {
-                console.error('Error fetching data:', error);
+                console.error("Error fetching data:", error);
             }
         }, POLLING_INTERVAL);
     };
@@ -84,19 +84,16 @@ export default class QRCodeGenerator extends Component<IProps, IState> {
     private renderQRCode(): ReactNode {
         if (this.state.showQRCode) {
             this.doPolling = true;
-            return (
-                <QRCode value={this.props.renderingData} />
-            );
+            return <QRCode value={this.props.renderingData} />;
         }
         return null;
     }
 
     private renderButton(): ReactNode {
-        if (!this.state.showQRCode){
+        if (!this.state.showQRCode) {
             return (
-                <button
-                    className="mx_Login_submit"
-                    onClick={this.handleButtonClick}>{_t("action|wallet_register")}
+                <button className="mx_Login_submit" onClick={this.handleButtonClick}>
+                    {_t("action|wallet_register")}
                 </button>
             );
         }

@@ -147,7 +147,7 @@ import { Filter } from "../views/dialogs/spotlight/Filter";
 import { checkSessionLockFree, getSessionLock } from "../../utils/SessionLock";
 import { SessionLockStolenView } from "./auth/SessionLockStolenView";
 import { ConfirmSessionLockTheftView } from "./auth/ConfirmSessionLockTheftView";
-import {SSO_HOMESERVER_URL_KEY} from "../../BasePlatform";
+import { SSO_HOMESERVER_URL_KEY } from "../../BasePlatform";
 
 // legacy export
 export { default as Views } from "../../Views";
@@ -2155,7 +2155,7 @@ export default class MatrixChat extends React.PureComponent<IProps, IState> {
                     defaultDeviceDisplayName={this.props.defaultDeviceDisplayName}
                     fragmentAfterLogin={fragmentAfterLogin}
                     siopv2Supported={true}
-                    completionForSiopv2={async (loginToken: string) : Promise<void> => {
+                    completionForSiopv2={async (loginToken: string): Promise<void> => {
                         let cli = MatrixClientPeg.get();
                         if (!cli) {
                             const { hsUrl, isUrl } = this.getServerProperties().serverConfig;
@@ -2171,7 +2171,7 @@ export default class MatrixChat extends React.PureComponent<IProps, IState> {
                         const delegatedAuthSucceeded = await Lifecycle.attemptTokenLoginForSiopv2(
                             loginToken,
                             this.props.defaultDeviceDisplayName,
-                            this.getFragmentAfterLogin()
+                            this.getFragmentAfterLogin(),
                         );
 
                         if (delegatedAuthSucceeded) {
