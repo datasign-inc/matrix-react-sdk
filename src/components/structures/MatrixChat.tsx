@@ -147,6 +147,7 @@ import { Filter } from "../views/dialogs/spotlight/Filter";
 import { checkSessionLockFree, getSessionLock } from "../../utils/SessionLock";
 import { SessionLockStolenView } from "./auth/SessionLockStolenView";
 import { ConfirmSessionLockTheftView } from "./auth/ConfirmSessionLockTheftView";
+import {SSO_HOMESERVER_URL_KEY} from "../../BasePlatform";
 
 // legacy export
 export { default as Views } from "../../Views";
@@ -2153,6 +2154,38 @@ export default class MatrixChat extends React.PureComponent<IProps, IState> {
                     onServerConfigChange={this.onServerConfigChange}
                     defaultDeviceDisplayName={this.props.defaultDeviceDisplayName}
                     fragmentAfterLogin={fragmentAfterLogin}
+                    siopv2Supported={true}
+                    completionForSiopv2={async (loginToken: string) : Promise<void> => {
+                        let cli = MatrixClientPeg.get();
+                        if (!cli) {
+                            const { hsUrl, isUrl } = this.getServerProperties().serverConfig;
+                            cli = createClient({
+                                baseUrl: hsUrl,
+                                idBaseUrl: isUrl,
+                            });
+                        }
+
+                        localStorage.setItem(SSO_HOMESERVER_URL_KEY, cli.getHomeserverUrl());
+
+                        // Otherwise, the first thing to do is to try the token params in the query-string
+                        const delegatedAuthSucceeded = await Lifecycle.attemptTokenLoginForSiopv2(
+                            loginToken,
+                            this.props.defaultDeviceDisplayName,
+                            this.getFragmentAfterLogin()
+                        );
+
+                        if (delegatedAuthSucceeded) {
+                            // token auth/OIDC worked! Time to fire up the client.
+                            this.tokenLogin = true;
+
+                            // Create and start the client
+                            // accesses the new credentials just set in storage during attemptDelegatedAuthLogin
+                            // and sets logged in state
+                            await Lifecycle.restoreFromLocalStorage({ ignoreGuest: true });
+                            await this.postLoginSetup();
+                            return;
+                        }
+                    }}
                     {...this.getServerProperties()}
                 />
             );

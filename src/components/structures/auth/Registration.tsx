@@ -26,7 +26,7 @@ import {
     MatrixClient,
     SSOFlow,
     SSOAction,
-    RegisterResponse,
+    RegisterResponse, ILoginFlow,
 } from "matrix-js-sdk/src/matrix";
 import React, { Fragment, ReactNode } from "react";
 import classNames from "classnames";
@@ -54,6 +54,7 @@ import SettingsStore from "../../../settings/SettingsStore";
 import { ValidatedServerConfig } from "../../../utils/ValidatedServerConfig";
 import { Features } from "../../../settings/Settings";
 import { startOidcLogin } from "../../../utils/oidc/authorize";
+import QRCodeGenerator from "../../views/auth/QRCodeGenerator";
 
 const debuglog = (...args: any[]): void => {
     if (SettingsStore.getValue("debug_registration")) {
@@ -70,6 +71,7 @@ interface IProps {
     sessionId?: string;
     idSid?: string;
     fragmentAfterLogin?: string;
+    siopv2Supported?: boolean;
 
     // Called when the user has logged in. Params:
     // - object with userId, deviceId, homeserverUrl, identityServerUrl, accessToken
@@ -80,6 +82,7 @@ interface IProps {
     // registration shouldn't know or care how login is done.
     onLoginClick(): void;
     onServerConfigChange(config: ValidatedServerConfig): void;
+    completionForSiopv2(loginToken: string): Promise<void>;
 }
 
 interface IState {
@@ -128,6 +131,40 @@ interface IState {
     // the OIDC native login flow, when supported and enabled
     // if present, must be used for registration
     oidcNativeFlow?: OidcNativeFlow;
+    siopv2Flow?: SIOPv2Flow;
+    params: Record<string, any> | undefined;
+}
+
+
+// todo: move to proper place
+export interface SIOPv2Flow extends ILoginFlow {
+    type: "m.login.siopv2";
+    // // eslint-disable-next-line camelcase
+    // identity_providers?: IIdentityProvider[];
+    // [DELEGATED_OIDC_COMPATIBILITY.name]?: boolean;
+    // [DELEGATED_OIDC_COMPATIBILITY.altName]?: boolean;
+}
+
+interface SIOPv2UriParameters {
+    client_id: string;
+    redirect_uri: string;
+    client_metadata_uri: string;
+    request_uri: string;
+}
+
+interface SIOPv2AccountCreation extends SIOPv2UriParameters {
+    polling_uri: string;
+}
+
+const createSiopv2Uri = (parameters: SIOPv2AccountCreation): string => {
+    const uri = new URL("siopv2://")
+    uri.search = new URLSearchParams({
+        client_id: parameters.client_id,
+        redirect_uri: parameters.redirect_uri,
+        client_metadata_uri: parameters.client_metadata_uri,
+        request_uri: parameters.request_uri
+    }).toString()
+    return uri.toString()
 }
 
 export default class Registration extends React.Component<IProps, IState> {
@@ -152,6 +189,8 @@ export default class Registration extends React.Component<IProps, IState> {
             serverIsAlive: true,
             serverErrorIsFatal: false,
             serverDeadError: "",
+            siopv2Flow: undefined,
+            params: undefined,
         };
 
         // only set on a config level, so we don't need to watch
@@ -237,11 +276,13 @@ export default class Registration extends React.Component<IProps, IState> {
         this.loginLogic.setDelegatedAuthentication(delegatedAuthentication);
 
         let ssoFlow: SSOFlow | undefined;
+        let siopv2Flow: SIOPv2Flow | undefined
         let oidcNativeFlow: OidcNativeFlow | undefined;
         try {
             const loginFlows = await this.loginLogic.getFlows(true);
             if (serverConfig !== this.latestServerConfig) return; // discard, serverConfig changed from under us
             ssoFlow = loginFlows.find((f) => f.type === "m.login.sso" || f.type === "m.login.cas") as SSOFlow;
+            siopv2Flow = loginFlows.find((f) => f.type === "m.login.siopv2") as SIOPv2Flow;
             oidcNativeFlow = loginFlows.find((f) => f.type === "oidcNativeFlow") as OidcNativeFlow;
         } catch (e) {
             if (serverConfig !== this.latestServerConfig) return; // discard, serverConfig changed from under us
@@ -251,6 +292,7 @@ export default class Registration extends React.Component<IProps, IState> {
         this.setState(({ flows }) => ({
             matrixClient: cli,
             ssoFlow,
+            siopv2Flow,
             oidcNativeFlow,
             // if we are using oidc native we won't continue with flow discovery on HS
             // so set an empty array to indicate flows are no longer loading
@@ -279,6 +321,7 @@ export default class Registration extends React.Component<IProps, IState> {
             if (e instanceof MatrixError && e.httpStatus === 401) {
                 this.setState({
                     flows: e.data.flows,
+                    params: e.data.params,
                 });
             } else if (e instanceof MatrixError && (e.httpStatus === 403 || e.errcode === "M_FORBIDDEN")) {
                 // Check for 403 or M_FORBIDDEN, Synapse used to send 403 M_UNKNOWN but now sends 403 M_FORBIDDEN.
@@ -595,23 +638,38 @@ export default class Registration extends React.Component<IProps, IState> {
                 );
             }
 
-            return (
-                <React.Fragment>
-                    {ssoSection}
-                    <RegistrationForm
-                        defaultUsername={this.state.formVals.username}
-                        defaultEmail={this.state.formVals.email}
-                        defaultPhoneCountry={this.state.formVals.phoneCountry}
-                        defaultPhoneNumber={this.state.formVals.phoneNumber}
-                        defaultPassword={this.state.formVals.password}
-                        onRegisterClick={this.onFormSubmit}
-                        flows={this.state.flows}
-                        serverConfig={this.props.serverConfig}
-                        canSubmit={!this.state.serverErrorIsFatal}
-                        matrixClient={this.state.matrixClient}
+            if (this.state.siopv2Flow && this.state.params && this.state.params["m.login.siopv2"]) {
+                const siopv2 = this.state.params["m.login.siopv2"] as SIOPv2AccountCreation
+                const pollingUri = siopv2.polling_uri as string
+                const qrData = createSiopv2Uri(siopv2)
+
+                return (
+                    <QRCodeGenerator
+                        renderingData={qrData}
+                        pollingUri={pollingUri}
+                        completionForSiopv2={this.props.completionForSiopv2}
                     />
-                </React.Fragment>
-            );
+                );
+
+            }else{
+                return (
+                    <React.Fragment>
+                        {ssoSection}
+                        <RegistrationForm
+                            defaultUsername={this.state.formVals.username}
+                            defaultEmail={this.state.formVals.email}
+                            defaultPhoneCountry={this.state.formVals.phoneCountry}
+                            defaultPhoneNumber={this.state.formVals.phoneNumber}
+                            defaultPassword={this.state.formVals.password}
+                            onRegisterClick={this.onFormSubmit}
+                            flows={this.state.flows}
+                            serverConfig={this.props.serverConfig}
+                            canSubmit={!this.state.serverErrorIsFatal}
+                            matrixClient={this.state.matrixClient}
+                        />
+                    </React.Fragment>
+                );
+            }
         }
 
         return null;
