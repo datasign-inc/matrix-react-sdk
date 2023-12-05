@@ -22,7 +22,7 @@ import { _t } from "../../../languageHandler";
 interface IProps {
     renderingData: string;
     pollingUri: string;
-    completionForSiopv2(loginToken: string): Promise<void>;
+    callback: (data: any) => Promise<void>;
 }
 
 interface IState {
@@ -66,9 +66,9 @@ export default class QRCodeGenerator extends Component<IProps, IState> {
 
                 if (response.ok) {
                     const data = await response.json();
-                    if (data && data?.login_token) {
+                    if (data) {
                         this.stopPolling();
-                        this.props.completionForSiopv2(data.login_token);
+                        this.props.callback(data);
                     }
                 }
             } catch (error) {

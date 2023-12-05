@@ -647,7 +647,7 @@ export default class Registration extends React.Component<IProps, IState> {
                     <QRCodeGenerator
                         renderingData={qrData}
                         pollingUri={pollingUri}
-                        completionForSiopv2={this.props.completionForSiopv2}
+                        callback={this.props.completionForSiopv2}
                     />
                 );
             } else {

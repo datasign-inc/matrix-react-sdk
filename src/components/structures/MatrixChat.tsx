@@ -2155,35 +2155,38 @@ export default class MatrixChat extends React.PureComponent<IProps, IState> {
                     defaultDeviceDisplayName={this.props.defaultDeviceDisplayName}
                     fragmentAfterLogin={fragmentAfterLogin}
                     siopv2Supported={true}
-                    completionForSiopv2={async (loginToken: string): Promise<void> => {
-                        let cli = MatrixClientPeg.get();
-                        if (!cli) {
-                            const { hsUrl, isUrl } = this.getServerProperties().serverConfig;
-                            cli = createClient({
-                                baseUrl: hsUrl,
-                                idBaseUrl: isUrl,
-                            });
-                        }
+                    completionForSiopv2={async (data: any): Promise<void> => {
+                        if (data?.loginToken) {
+                            const loginToken = data.loginToken;
+                            let cli = MatrixClientPeg.get();
+                            if (!cli) {
+                                const { hsUrl, isUrl } = this.getServerProperties().serverConfig;
+                                cli = createClient({
+                                    baseUrl: hsUrl,
+                                    idBaseUrl: isUrl,
+                                });
+                            }
 
-                        localStorage.setItem(SSO_HOMESERVER_URL_KEY, cli.getHomeserverUrl());
+                            localStorage.setItem(SSO_HOMESERVER_URL_KEY, cli.getHomeserverUrl());
 
-                        // Otherwise, the first thing to do is to try the token params in the query-string
-                        const delegatedAuthSucceeded = await Lifecycle.attemptTokenLoginForSiopv2(
-                            loginToken,
-                            this.props.defaultDeviceDisplayName,
-                            this.getFragmentAfterLogin(),
-                        );
+                            // Otherwise, the first thing to do is to try the token params in the query-string
+                            const delegatedAuthSucceeded = await Lifecycle.attemptTokenLoginForSiopv2(
+                                loginToken,
+                                this.props.defaultDeviceDisplayName,
+                                this.getFragmentAfterLogin(),
+                            );
 
-                        if (delegatedAuthSucceeded) {
-                            // token auth/OIDC worked! Time to fire up the client.
-                            this.tokenLogin = true;
+                            if (delegatedAuthSucceeded) {
+                                // token auth/OIDC worked! Time to fire up the client.
+                                this.tokenLogin = true;
 
-                            // Create and start the client
-                            // accesses the new credentials just set in storage during attemptDelegatedAuthLogin
-                            // and sets logged in state
-                            await Lifecycle.restoreFromLocalStorage({ ignoreGuest: true });
-                            await this.postLoginSetup();
-                            return;
+                                // Create and start the client
+                                // accesses the new credentials just set in storage during attemptDelegatedAuthLogin
+                                // and sets logged in state
+                                await Lifecycle.restoreFromLocalStorage({ ignoreGuest: true });
+                                await this.postLoginSetup();
+                                return;
+                            }
                         }
                     }}
                     {...this.getServerProperties()}
