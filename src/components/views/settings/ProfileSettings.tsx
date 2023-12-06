@@ -30,6 +30,7 @@ import UserIdentifierCustomisations from "../../../customisations/UserIdentifier
 import { chromeFileInputFix } from "../../../utils/BrowserWorkarounds";
 import PosthogTrackers from "../../../PosthogTrackers";
 import { SettingsSubsectionHeading } from "./shared/SettingsSubsectionHeading";
+import ProveAttributeSetting from "./ProveAttributeSetting";
 
 interface IState {
     originalDisplayName: string;
@@ -206,6 +207,9 @@ export default class ProfileSettings extends React.Component<{}, IState> {
                         removeAvatar={this.removeAvatar}
                     />
                 </div>
+                <ProveAttributeSetting
+                    homeserverUrl={MatrixClientPeg.get()?.getHomeserverUrl()}
+                ></ProveAttributeSetting>
                 <div className="mx_ProfileSettings_buttons">
                     <AccessibleButton
                         onClick={this.cancelProfileChanges}
