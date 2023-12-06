@@ -23,6 +23,7 @@ interface IProps {
     renderingData: string;
     pollingUri: string;
     callback: (data: any) => Promise<void>;
+    showFromBeginning: boolean;
 }
 
 interface IState {
@@ -35,8 +36,9 @@ export default class QRCodeGenerator extends Component<IProps, IState> {
 
     public constructor(props: IProps) {
         super(props);
+        this.doPolling = this.props.showFromBeginning;
         this.state = {
-            showQRCode: false,
+            showQRCode: this.props.showFromBeginning,
         };
     }
 
@@ -45,7 +47,7 @@ export default class QRCodeGenerator extends Component<IProps, IState> {
     }
 
     public componentWillUnmount(): void {
-        this.stopPolling;
+        this.stopPolling();
     }
 
     private stopPolling(): void {
@@ -68,7 +70,7 @@ export default class QRCodeGenerator extends Component<IProps, IState> {
                     const data = await response.json();
                     if (data) {
                         this.stopPolling();
-                        this.props.callback(data);
+                        await this.props.callback(data);
                     }
                 }
             } catch (error) {
@@ -104,7 +106,7 @@ export default class QRCodeGenerator extends Component<IProps, IState> {
         return (
             <div>
                 {this.renderQRCode()}
-                {this.renderButton()}
+                {!this.props.showFromBeginning && this.renderButton()}
             </div>
         );
     }

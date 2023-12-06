@@ -648,6 +648,7 @@ export default class Registration extends React.Component<IProps, IState> {
                         renderingData={qrData}
                         pollingUri={pollingUri}
                         callback={this.props.completionForSiopv2}
+                        showFromBeginning={false}
                     />
                 );
             } else {
