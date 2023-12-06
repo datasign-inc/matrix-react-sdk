@@ -16,6 +16,7 @@ limitations under the License.
 
 import React, { Component, ReactNode } from "react";
 import QRCode from "qrcode.react";
+import { MatrixClientPeg } from "../../../MatrixClientPeg";
 
 import { _t } from "../../../languageHandler";
 
@@ -64,7 +65,13 @@ export default class QRCodeGenerator extends Component<IProps, IState> {
                 if (!this.doPolling) {
                     return;
                 }
-                const response = await fetch(this.props.pollingUri);
+                // todo: Executing the API should be implemented as a MatrixClient function.
+                let accessToken = null
+                try{
+                    accessToken = MatrixClientPeg.safeGet().getAccessToken();
+                }catch(error){}
+                const response = await fetch(this.props.pollingUri,
+                    accessToken ? {headers: {Authorization: `Bearer ${accessToken}`}} : {})
 
                 if (response.ok) {
                     const data = await response.json();

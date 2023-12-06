@@ -1,6 +1,7 @@
 import React from "react";
 import Modal from "../../../Modal";
 import ProveAttribute from "./ProveAttribute";
+import { MatrixClientPeg } from "../../../MatrixClientPeg";
 import VerifiedMark from "./VerifiedMark";
 
 interface IProps {
@@ -37,8 +38,11 @@ export default class ProveAttributeSetting extends React.Component<IProps, IStat
     };
 
     private fetchData = async (path: string): Promise<VPRequest | undefined> => {
+        // todo: Executing the API should be implemented as a MatrixClient function.
         const url = new URL(path, this.props.homeserverUrl);
-        const response = await fetch(url.toString());
+        const response = await fetch(url.toString(), {headers:
+                {Authorization: `Bearer ${MatrixClientPeg.safeGet().getAccessToken()}`}
+        });
         if (response.ok) {
             return await response.json() as VPRequest;
         }
