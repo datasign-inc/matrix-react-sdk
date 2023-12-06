@@ -18,6 +18,7 @@ interface IState {
 export default class VerifiedMark extends React.Component<IProps, IState> {
 
     componentDidMount() {
+        // todo: Executing the API should be implemented as a MatrixClient function.
         fetch(this.props.url,
             {headers:
                     {Authorization: `Bearer ${MatrixClientPeg.safeGet().getAccessToken()}`}} )
