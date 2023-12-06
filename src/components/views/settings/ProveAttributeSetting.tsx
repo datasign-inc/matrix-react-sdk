@@ -20,8 +20,8 @@ interface VPRequest {
 const VERIFY_AGE = "/_matrix/client/v3/vp/ageOver13"
 const VERIFY_AFFILIATION = "/_matrix/client/v3/vp/affiliation"
 
-const VERIFY_RESULT_AGE = "/_matrix/client/v3/verify_age"
-const VERIFY_RESULT_AFFILIATION = "/_matrix/client/v3/verify_affiliation"
+const VERIFY_RESULT_AGE = "/_matrix/client/v3/verify_by_server/ageOver13"
+const VERIFY_RESULT_AFFILIATION = "/_matrix/client/v3/verify_by_server/affiliation"
 
 export default class ProveAttributeSetting extends React.Component<IProps, IState> {
     public constructor(props: IProps){
