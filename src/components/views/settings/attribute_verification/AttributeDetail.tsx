@@ -1,4 +1,5 @@
 import React from "react";
+
 import {VPType} from "./Attribute";
 import {Claims, IssuerInfoClaims} from "./VerifiedAttributes";
 

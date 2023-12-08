@@ -16,7 +16,7 @@ export default class VerificationMark extends React.Component<IProps, {}> {
         return (
             <Fragment>
                 {this.props.isVerified ?
-                    <span className="mx_ProfileVerifiedMark" style={style}/> :
+                    <span className="mx_ProfileVerifiedMark" style={style} /> :
                     <span className="mx_ProfileUnVerifiedMark" style={style} />}
             </Fragment>
         );

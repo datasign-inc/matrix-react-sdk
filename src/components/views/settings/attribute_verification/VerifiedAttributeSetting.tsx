@@ -19,7 +19,7 @@ export default class VerifiedAttributeSetting extends React.Component<IProps, IS
             <div>
                 <div>
                     <VerifiedAttributes
-                        deletable={true}/>
+                        deletable={true} />
                 </div>
                 <div>
                     <AddVerifiedAttribute />
