@@ -1,5 +1,6 @@
 
 import React, {Fragment} from "react";
+
 import { MatrixClientPeg } from "../../../MatrixClientPeg";
 
 interface IProps {
@@ -56,8 +57,8 @@ export default class VerifiedMark extends React.Component<IProps, IState> {
         return (
             <Fragment>
                 {data?.verification_status === 'ok' ?
-                    <span className={"mx_ProfileVerifiedMark"}></span> :
-                    <span className={"mx_ProfileUnVerifiedMark"}></span>}
+                    <span className="mx_ProfileVerifiedMark" /> :
+                    <span className="mx_ProfileUnVerifiedMark" />}
             </Fragment>
         );
     }

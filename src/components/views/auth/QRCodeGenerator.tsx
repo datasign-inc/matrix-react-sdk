@@ -16,8 +16,8 @@ limitations under the License.
 
 import React, { Component, ReactNode } from "react";
 import QRCode from "qrcode.react";
-import { MatrixClientPeg } from "../../../MatrixClientPeg";
 
+import { MatrixClientPeg } from "../../../MatrixClientPeg";
 import { _t } from "../../../languageHandler";
 
 interface IProps {

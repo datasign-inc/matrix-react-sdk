@@ -1,4 +1,5 @@
 import React from "react";
+
 import QRCodeGenerator from "../auth/QRCodeGenerator";
 
 interface IProps {

@@ -209,7 +209,7 @@ export default class ProfileSettings extends React.Component<{}, IState> {
                 </div>
                 <ProveAttributeSetting
                     homeserverUrl={MatrixClientPeg.get()?.getHomeserverUrl()}
-                ></ProveAttributeSetting>
+                 />
                 <div className="mx_ProfileSettings_buttons">
                     <AccessibleButton
                         onClick={this.cancelProfileChanges}
