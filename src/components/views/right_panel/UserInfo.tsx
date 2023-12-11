@@ -1670,6 +1670,7 @@ export const UserInfoHeader: React.FC<{
                         <VerifiedAttributes
                             user_id={mxId}
                             deletable={false}
+                            countOnly={false}
                         />
                     )}
                     <div className="mx_UserInfo_profileStatus">{presenceLabel}</div>

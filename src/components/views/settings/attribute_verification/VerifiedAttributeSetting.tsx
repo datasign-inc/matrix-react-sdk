@@ -23,7 +23,8 @@ export default class VerifiedAttributeSetting extends React.Component<IProps, IS
                     {user_id &&
                         <VerifiedAttributes
                             user_id={user_id}
-                                deletable={true} />
+                                deletable={true}
+                        countOnly={false}/>
                     }
                 </div>
                 <div>

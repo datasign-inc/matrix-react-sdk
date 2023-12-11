@@ -670,8 +670,10 @@ export default class RoomPreviewBar extends React.Component<IProps, IState> {
             if (inviteMember) {
                 subTitleElements.splice(1, 0,
                     <VerifiedAttributes
+                        key={inviteMember.userId}
                         user_id={inviteMember.userId}
                         deletable={false}
+                        countOnly={false}
                     />
                 )
             }

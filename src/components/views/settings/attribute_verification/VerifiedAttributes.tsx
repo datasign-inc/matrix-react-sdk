@@ -3,11 +3,13 @@ import React, {Fragment} from "react";
 import {postData} from "./util";
 import Attribute, {AttributeProp, VPType} from "./Attribute";
 import {MatrixClientPeg} from "../../../../MatrixClientPeg";
+import VerificationMark from "./VerificationMark";
 
 
 interface IProps {
     user_id: string;
     deletable: boolean;
+    countOnly: boolean;
 }
 
 interface IState {
@@ -104,10 +106,26 @@ export default class VerifiedAttributes extends React.Component<IProps, IState> 
     }
 
     public render(): React.ReactNode {
+        if (this.props.countOnly){
+            const text = `${this.createAttributeProps().length}項目認証済み`
+            return (
+                    <Fragment>
+                        {this.createAttributeProps().length > 0 &&
+                            (
+                                <div style={{marginTop: "5px", marginBottom: "0px"}}>
+                            <VerificationMark isVerified={true} />
+                                    <span style={{display: "inline-block"}}>{text}</span>
+                                    </div>
+                            )
+                        }
+                    </Fragment>
+            )
+        }
         return (
             <Fragment>
                 {this.createAttributeProps().map((attribute, index) => (
                         <Attribute
+                            key={`${this.props.user_id}-${attribute.vp_type}-${attribute.num}`}
                             vp_type={attribute.vp_type}
                             description={attribute.description}
                             num={attribute.num}
