@@ -21,6 +21,10 @@ export interface IssuerInfoClaims {
     issuer_name: string;
     issuer_address: string;
     issuer_domain: string;
+    issuer_authenticator_org_name: string;
+    issuer_authenticator_address: string;
+    not_before: string;
+    not_after: string;
 }
 
 interface VerifiedData {
