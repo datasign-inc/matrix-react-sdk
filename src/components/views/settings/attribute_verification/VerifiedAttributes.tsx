@@ -56,7 +56,7 @@ export default class VerifiedAttributes extends React.Component<IProps, IState> 
         super(props);
         this.state = {
             verifiedAttributes: [],
-            isLoading: true
+            isLoading: false
         };
     }
 
@@ -64,7 +64,14 @@ export default class VerifiedAttributes extends React.Component<IProps, IState> 
         await this.retrieveVerifiedAttributes();
     }
 
+    public async componentDidUpdate(prevProps: IProps) {
+        if (prevProps.user_id !== this.props.user_id) {
+            await this.retrieveVerifiedAttributes();
+        }
+    }
+
     private retrieveVerifiedAttributes = async () => {
+        this.setState({ isLoading: true })
         try{
             const attributes: VerifiedAttributeResponse[] = []
             const baseUrl = MatrixClientPeg.get()?.getHomeserverUrl()
@@ -117,11 +124,12 @@ export default class VerifiedAttributes extends React.Component<IProps, IState> 
         if (isLoading) {
             return <div>Loading...</div>;
         }
+        const attributeProps = this.createAttributeProps()
         if (this.props.countOnly){
-            const text = `${this.createAttributeProps().length}項目認証済み`
+            const text = `${attributeProps.length}項目認証済み`
             return (
                     <Fragment>
-                        {this.createAttributeProps().length > 0 &&
+                        {attributeProps.length > 0 &&
                             (
                                 <div style={{marginTop: "5px", marginBottom: "0px"}}>
                             <VerificationMark isVerified={true} />
@@ -134,7 +142,7 @@ export default class VerifiedAttributes extends React.Component<IProps, IState> 
         }
         return (
             <Fragment>
-                {this.createAttributeProps().map((attribute, index) => (
+                {attributeProps.map((attribute, index) => (
                         <Attribute
                             key={`${this.props.user_id}-${attribute.vp_type}-${attribute.num}`}
                             vp_type={attribute.vp_type}
