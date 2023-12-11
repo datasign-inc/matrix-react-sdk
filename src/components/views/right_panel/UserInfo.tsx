@@ -1668,6 +1668,7 @@ export const UserInfoHeader: React.FC<{
                     </div>
                     {mxId && (
                         <VerifiedAttributes
+                            user_id={mxId}
                             deletable={false}
                         />
                     )}

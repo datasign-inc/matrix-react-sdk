@@ -23,13 +23,13 @@ export default class IssuerDetail extends React.Component<IProps, IState> {
                     <h5 style={{marginBottom: "0%"}}>組織</h5>
                     {this.props.issuer_info.issuer_name}
                 </div>
-                <hr style={{marginTop: "5%"}}/>
+                <hr style={{marginTop: "5%"}} />
                 <div>
                     <h4>発行元</h4>
                     <h5 style={{marginBottom: "0%"}}>組織</h5>
                     {this.props.issuer_info.issuer_authenticator_org_name}
                 </div>
-                <hr style={{marginTop: "5%"}}/>
+                <hr style={{marginTop: "5%"}} />
                 <div>
                     <h4>有効期限</h4>
                     <h5 style={{marginBottom: "0%"}}>発行日</h5>

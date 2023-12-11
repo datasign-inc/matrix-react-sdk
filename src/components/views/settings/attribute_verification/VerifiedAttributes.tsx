@@ -1,11 +1,12 @@
 import React, {Fragment} from "react";
 
-import {getData} from "./util";
+import {postData} from "./util";
 import Attribute, {AttributeProp, VPType} from "./Attribute";
 import {MatrixClientPeg} from "../../../../MatrixClientPeg";
 
 
 interface IProps {
+    user_id: string;
     deletable: boolean;
 }
 
@@ -64,7 +65,9 @@ export default class VerifiedAttributes extends React.Component<IProps, IState> 
         const baseUrl = MatrixClientPeg.get()?.getHomeserverUrl()
         if (baseUrl){
             for(const path of SUPPORTED_VERIFICATION){
-                const data = await getData(new URL(path, baseUrl).toString())
+                const data = await postData(new URL(path, baseUrl).toString(),
+                    {user_id: this.props.user_id}
+                    )
                 if (data){
                     const verifiedAttributeResponse = data as VerifiedAttributeResponse
                     const verified_data = verifiedAttributeResponse.verified_data

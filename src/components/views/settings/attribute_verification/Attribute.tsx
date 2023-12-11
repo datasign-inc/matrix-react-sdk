@@ -77,7 +77,7 @@ export default class Attribute extends React.Component<AttributeProp, IState> {
         return (
             <Fragment>
                 {!this.state.isDeleted && (
-                    <div style={{marginTop: "5px"}}>
+                    <div style={{marginTop: "5px", marginBottom: "0px"}}>
                 <VerificationMark isVerified={true} />
                        <a onClick={this.detail} style={{color: "black"}}>{this.decideLabel()}</a>
                         {this.props.deletable &&

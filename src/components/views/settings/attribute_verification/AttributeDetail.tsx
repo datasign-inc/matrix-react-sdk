@@ -54,7 +54,7 @@ export default class AttributeDetail extends React.Component<IProps, IState> {
                         {this.props.issuer_info.issuer_address}
                     </div>
                     <div>
-                        <h4 style={{marginBottom: "3px"}} >ドメイン名</h4>
+                        <h4 style={{marginBottom: "3px"}}>ドメイン名</h4>
                         {this.props.issuer_info.issuer_domain}
                     </div>
                 </div>
