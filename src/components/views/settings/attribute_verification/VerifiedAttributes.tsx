@@ -14,6 +14,7 @@ interface IProps {
 
 interface IState {
     verifiedAttributes: VerifiedAttributeResponse[];
+    isLoading: boolean;
 }
 
 export interface Claims {
@@ -55,6 +56,7 @@ export default class VerifiedAttributes extends React.Component<IProps, IState> 
         super(props);
         this.state = {
             verifiedAttributes: [],
+            isLoading: true
         };
     }
 
@@ -63,23 +65,28 @@ export default class VerifiedAttributes extends React.Component<IProps, IState> 
     }
 
     private retrieveVerifiedAttributes = async () => {
-        const attributes: VerifiedAttributeResponse[] = []
-        const baseUrl = MatrixClientPeg.get()?.getHomeserverUrl()
-        if (baseUrl){
-            for(const path of SUPPORTED_VERIFICATION){
-                const data = await postData(new URL(path, baseUrl).toString(),
-                    {user_id: this.props.user_id}
+        try{
+            const attributes: VerifiedAttributeResponse[] = []
+            const baseUrl = MatrixClientPeg.get()?.getHomeserverUrl()
+            if (baseUrl){
+                for(const path of SUPPORTED_VERIFICATION){
+                    const data = await postData(new URL(path, baseUrl).toString(),
+                        {user_id: this.props.user_id}
                     )
-                if (data){
-                    const verifiedAttributeResponse = data as VerifiedAttributeResponse
-                    const verified_data = verifiedAttributeResponse.verified_data
-                    if (Object.keys(verified_data).length > 0){
-                        attributes.push(verifiedAttributeResponse)
+                    if (data){
+                        const verifiedAttributeResponse = data as VerifiedAttributeResponse
+                        const verified_data = verifiedAttributeResponse.verified_data
+                        if (Object.keys(verified_data).length > 0){
+                            attributes.push(verifiedAttributeResponse)
+                        }
                     }
                 }
             }
+            this.setState({ verifiedAttributes: attributes, isLoading: false});
+        }catch(error){
+            console.error("Error fetching data:", error);
+            this.setState({ isLoading: false });
         }
-        this.setState({ verifiedAttributes: attributes });
     }
 
     private createAttributeProps = (): AttributeProp[] => {
@@ -106,6 +113,10 @@ export default class VerifiedAttributes extends React.Component<IProps, IState> 
     }
 
     public render(): React.ReactNode {
+        const { isLoading } = this.state;
+        if (isLoading) {
+            return <div>Loading...</div>;
+        }
         if (this.props.countOnly){
             const text = `${this.createAttributeProps().length}項目認証済み`
             return (
