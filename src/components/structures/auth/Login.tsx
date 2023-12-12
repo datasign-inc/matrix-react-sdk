@@ -40,6 +40,8 @@ import { ValidatedServerConfig } from "../../../utils/ValidatedServerConfig";
 import { filterBoolean } from "../../../utils/arrays";
 import { Features } from "../../../settings/Settings";
 import { startOidcLogin } from "../../../utils/oidc/authorize";
+import QRCodeGenerator from "../../views/auth/QRCodeGenerator";
+import {createSiopv2Uri, SIOPv2AccountCreation} from "./Registration";
 
 interface IProps {
     serverConfig: ValidatedServerConfig;
@@ -138,6 +140,7 @@ export default class LoginComponent extends React.PureComponent<IProps, IState> 
             // eslint-disable-next-line @typescript-eslint/naming-convention
             "m.login.sso": () => this.renderSsoStep("sso"),
             "oidcNativeFlow": () => this.renderOidcNativeStep(),
+            "m.login.siopv2": () => this.renderSiopv2Step(),
         };
     }
 
@@ -423,7 +426,15 @@ export default class LoginComponent extends React.PureComponent<IProps, IState> 
         // this is the ideal order we want to show the flows in
         const order = ["oidcNativeFlow", "m.login.password", "m.login.sso"];
 
-        const flows = filterBoolean(order.map((type) => this.state.flows?.find((flow) => flow.type === type)));
+        const siopv2Enabled = this.state.flows?.find(
+            (flow) => flow.type === "m.login.siopv2");
+
+        // If the server is SIOPv2 compliant, show only that.
+        const flows =
+            siopv2Enabled ? [{type: "m.login.siopv2"}]  :
+                filterBoolean(order.map((type) =>
+                    this.state.flows?.find((flow) => flow.type === type)));
+
         return (
             <React.Fragment>
                 {flows.map((flow) => {
@@ -453,6 +464,30 @@ export default class LoginComponent extends React.PureComponent<IProps, IState> 
             />
         );
     };
+
+    private renderSiopv2Step = (): React.ReactNode => {
+        const siopv2Flow = this.state.flows?.find(
+            (flow) => flow.type === "m.login.siopv2");
+        if (siopv2Flow) {
+            // todo: type annotation for ClientLoginFlow
+            // @ts-ignore
+            const siopv2 = siopv2Flow["params"] as SIOPv2AccountCreation;
+            const pollingUri = siopv2.polling_uri as string;
+            const qrData = createSiopv2Uri(siopv2);
+            return (
+                <div style={{marginBottom: "5%"}}>
+                    <QRCodeGenerator
+                        renderingData={qrData}
+                        pollingUri={pollingUri}
+                        callback={async (data) => {
+                            console.log("qr code generator callback called !!")
+                        }}
+                        showFromBeginning={false}
+                    />
+                </div>
+            )
+        }
+    }
 
     private renderOidcNativeStep = (): React.ReactNode => {
         const flow = this.state.flows!.find((flow) => flow.type === "oidcNativeFlow")! as OidcNativeFlow;
