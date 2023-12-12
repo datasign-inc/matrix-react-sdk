@@ -83,7 +83,7 @@ interface IProps {
     // registration shouldn't know or care how login is done.
     onLoginClick(): void;
     onServerConfigChange(config: ValidatedServerConfig): void;
-    completionForSiopv2(loginToken: string): Promise<void>;
+    completionForSiopv2(data: any): Promise<void>;
 }
 
 interface IState {

@@ -67,6 +67,7 @@ interface IProps {
     onRegisterClick(): void;
     onForgotPasswordClick?(): void;
     onServerConfigChange(config: ValidatedServerConfig): void;
+    completionForSiopv2(data: any): Promise<void>;
 }
 
 interface IState {
@@ -479,9 +480,7 @@ export default class LoginComponent extends React.PureComponent<IProps, IState> 
                     <QRCodeGenerator
                         renderingData={qrData}
                         pollingUri={pollingUri}
-                        callback={async (data) => {
-                            console.log("qr code generator callback called !!")
-                        }}
+                        callback={this.props.completionForSiopv2}
                         showFromBeginning={false}
                     />
                 </div>
