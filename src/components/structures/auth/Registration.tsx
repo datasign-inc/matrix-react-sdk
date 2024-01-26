@@ -83,7 +83,7 @@ interface IProps {
     // registration shouldn't know or care how login is done.
     onLoginClick(): void;
     onServerConfigChange(config: ValidatedServerConfig): void;
-    completionForSiopv2(loginToken: string): Promise<void>;
+    completionForSiopv2(data: any): Promise<void>;
 }
 
 interface IState {
@@ -145,18 +145,18 @@ export interface SIOPv2Flow extends ILoginFlow {
     // [DELEGATED_OIDC_COMPATIBILITY.altName]?: boolean;
 }
 
-interface SIOPv2UriParameters {
+export interface SIOPv2UriParameters {
     client_id: string;
     redirect_uri: string;
     client_metadata_uri: string;
     request_uri: string;
 }
 
-interface SIOPv2AccountCreation extends SIOPv2UriParameters {
+export interface SIOPv2AccountCreation extends SIOPv2UriParameters {
     polling_uri: string;
 }
 
-const createSiopv2Uri = (parameters: SIOPv2AccountCreation): string => {
+export const createSiopv2Uri = (parameters: SIOPv2AccountCreation): string => {
     const uri = new URL("siopv2://");
     uri.search = new URLSearchParams({
         client_id: parameters.client_id,
@@ -645,6 +645,7 @@ export default class Registration extends React.Component<IProps, IState> {
 
                 return (
                     <QRCodeGenerator
+                        registration={true}
                         renderingData={qrData}
                         pollingUri={pollingUri}
                         callback={this.props.completionForSiopv2}

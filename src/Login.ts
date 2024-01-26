@@ -38,6 +38,7 @@ import { isUserRegistrationSupported } from "./utils/oidc/isUserRegistrationSupp
  * LoginFlow type use the client API /login endpoint
  * OidcNativeFlow is specific to this client
  */
+// todo: support siopv2 login flow
 export type ClientLoginFlow = LoginFlow | OidcNativeFlow;
 
 interface ILoginOptions {

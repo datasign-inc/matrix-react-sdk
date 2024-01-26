@@ -21,6 +21,7 @@ import { MatrixClientPeg } from "../../../MatrixClientPeg";
 import { _t } from "../../../languageHandler";
 
 interface IProps {
+    registration?: boolean;
     renderingData: string;
     pollingUri: string;
     callback: (data: any) => Promise<void>;
@@ -102,7 +103,7 @@ export default class QRCodeGenerator extends Component<IProps, IState> {
         if (!this.state.showQRCode) {
             return (
                 <button className="mx_Login_submit" onClick={this.handleButtonClick}>
-                    {_t("action|wallet_register")}
+                    {this.props.registration ? _t("action|wallet_register") : "ウォレットでサインイン"}
                 </button>
             );
         }
