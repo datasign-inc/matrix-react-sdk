@@ -13,8 +13,9 @@ phases:
             - pwd
             - echo Cloning repositories...
             - \rm -r *
-            - git clone https://github.com/matrix-org/matrix-js-sdk.git
+            - git clone https://github.com/datasign-inc/matrix-js-sdk.git
             - cd matrix-js-sdk
+            - git checkout 0c7342cb20c51d049997597b5b96de1744bd7b66
             - yarn link
             - yarn install
             - cd ../
@@ -26,8 +27,9 @@ phases:
             - cd ../
     build:
         commands:
-            - git clone https://github.com/element-hq/element-web.git
+            - git clone https://github.com/datasign-inc/element-web.git
             - cd element-web
+            - git checkout -b customize-for-ownd-project origin/customize-for-ownd-project
             - yarn link matrix-js-sdk
             - yarn link matrix-react-sdk
             - yarn install
