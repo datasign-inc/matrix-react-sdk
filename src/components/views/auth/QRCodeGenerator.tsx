@@ -17,12 +17,15 @@ limitations under the License.
 import React, { Component, ReactNode } from "react";
 import QRCode from "qrcode.react";
 
+import { MatrixClientPeg } from "../../../MatrixClientPeg";
 import { _t } from "../../../languageHandler";
 
 interface IProps {
+    registration?: boolean;
     renderingData: string;
     pollingUri: string;
-    completionForSiopv2(loginToken: string): Promise<void>;
+    callback: (data: any) => Promise<void>;
+    showFromBeginning: boolean;
 }
 
 interface IState {
@@ -35,8 +38,9 @@ export default class QRCodeGenerator extends Component<IProps, IState> {
 
     public constructor(props: IProps) {
         super(props);
+        this.doPolling = this.props.showFromBeginning;
         this.state = {
-            showQRCode: false,
+            showQRCode: this.props.showFromBeginning,
         };
     }
 
@@ -45,7 +49,7 @@ export default class QRCodeGenerator extends Component<IProps, IState> {
     }
 
     public componentWillUnmount(): void {
-        this.stopPolling;
+        this.stopPolling();
     }
 
     private stopPolling(): void {
@@ -62,13 +66,19 @@ export default class QRCodeGenerator extends Component<IProps, IState> {
                 if (!this.doPolling) {
                     return;
                 }
-                const response = await fetch(this.props.pollingUri);
+                // todo: Executing the API should be implemented as a MatrixClient function.
+                let accessToken = null
+                try{
+                    accessToken = MatrixClientPeg.safeGet().getAccessToken();
+                }catch(error){}
+                const response = await fetch(this.props.pollingUri,
+                    accessToken ? {headers: {Authorization: `Bearer ${accessToken}`}} : {})
 
                 if (response.ok) {
                     const data = await response.json();
-                    if (data && data?.login_token) {
+                    if (data) {
                         this.stopPolling();
-                        this.props.completionForSiopv2(data.login_token);
+                        await this.props.callback(data);
                     }
                 }
             } catch (error) {
@@ -93,7 +103,7 @@ export default class QRCodeGenerator extends Component<IProps, IState> {
         if (!this.state.showQRCode) {
             return (
                 <button className="mx_Login_submit" onClick={this.handleButtonClick}>
-                    {_t("action|wallet_register")}
+                    {this.props.registration ? _t("action|wallet_register") : "ウォレットでサインイン"}
                 </button>
             );
         }
@@ -104,7 +114,7 @@ export default class QRCodeGenerator extends Component<IProps, IState> {
         return (
             <div>
                 {this.renderQRCode()}
-                {this.renderButton()}
+                {!this.props.showFromBeginning && this.renderButton()}
             </div>
         );
     }

@@ -74,6 +74,7 @@ import { UNKNOWN_PROFILE_ERRORS } from "../../../utils/MultiInviter";
 import AskInviteAnywayDialog, { UnknownProfiles } from "./AskInviteAnywayDialog";
 import { SdkContextClass } from "../../../contexts/SDKContext";
 import { UserProfilesStore } from "../../../stores/UserProfilesStore";
+import VerifiedAttributes from "../settings/attribute_verification/VerifiedAttributes";
 
 // we have a number of types defined from the Matrix spec which can't reasonably be altered here.
 /* eslint-disable camelcase */
@@ -278,6 +279,10 @@ class DMRoomTile extends React.PureComponent<IDMRoomTileProps> {
             <AccessibleButton className="mx_InviteDialog_tile mx_InviteDialog_tile--room" onClick={this.onClick}>
                 {stackedAvatar}
                 <span className="mx_InviteDialog_tile_nameStack">
+                    <VerifiedAttributes
+                        user_id={this.props.member.userId}
+                    deletable={false}
+                    countOnly={true}/>
                     <div className="mx_InviteDialog_tile_nameStack_name">
                         {this.highlightName(this.props.member.name)}
                     </div>

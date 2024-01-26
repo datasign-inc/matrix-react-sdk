@@ -306,7 +306,7 @@
         },
         "set_email_prompt": "メールアドレスを設定しますか？",
         "sign_in_instead": "サインイン",
-        "sign_in_instead_prompt": "サインイン",
+        "sign_in_instead_prompt": "<a>サインイン</a>",
         "sign_in_or_register": "サインインするか、アカウントを作成してください",
         "sign_in_or_register_description": "続行するには、作成済のアカウントを使用するか、新しいアカウントを作成してください。",
         "sign_in_prompt": "アカウントがありますか？<a>サインインしてください</a>",
