@@ -83,6 +83,7 @@ import { DirectoryMember, startDmOnFirstMessage } from "../../../utils/direct-me
 import { SdkContextClass } from "../../../contexts/SDKContext";
 import { asyncSome } from "../../../utils/arrays";
 import UIStore from "../../../stores/UIStore";
+import VerifiedAttributes from "../settings/attribute_verification/VerifiedAttributes";
 
 export interface IDevice extends Device {
     ambiguous?: boolean;
@@ -1644,6 +1645,10 @@ export const UserInfoHeader: React.FC<{
     const e2eIcon = e2eStatus ? <E2EIcon size={18} status={e2eStatus} isUser={true} /> : null;
 
     const displayName = (member as RoomMember).rawDisplayName;
+    const mxId = UserIdentifierCustomisations.getDisplayUserIdentifier?.(member.userId, {
+            roomId,
+            withDisplayName: true,
+        })
     return (
         <React.Fragment>
             {avatarElement}
@@ -1659,11 +1664,15 @@ export const UserInfoHeader: React.FC<{
                         </h2>
                     </div>
                     <div className="mx_UserInfo_profile_mxid">
-                        {UserIdentifierCustomisations.getDisplayUserIdentifier?.(member.userId, {
-                            roomId,
-                            withDisplayName: true,
-                        })}
+                        {mxId}
                     </div>
+                    {mxId && (
+                        <VerifiedAttributes
+                            user_id={mxId}
+                            deletable={false}
+                            countOnly={false}
+                        />
+                    )}
                     <div className="mx_UserInfo_profileStatus">{presenceLabel}</div>
                 </div>
             </div>

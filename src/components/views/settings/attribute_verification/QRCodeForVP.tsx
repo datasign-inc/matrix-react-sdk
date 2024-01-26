@@ -1,28 +1,23 @@
 import React from "react";
-import QRCodeGenerator from "../auth/QRCodeGenerator";
+
+import QRCodeGenerator from "../../auth/QRCodeGenerator";
 
 interface IProps {
     data: string
     pollingUri: string
 }
 
-
-interface IState {
-}
-
-export default class ProveAttribute extends React.Component<IProps, IState> {
-
+export default class QRCodeForVp extends React.Component<IProps, {}> {
     public constructor(props: IProps) {
         super(props);
     }
 
-    public render(): React.ReactNode {
+    render() {
+
         return (
             <div>
-                <div>
-                    <h1>ウォレットの証明書で認証</h1>
-                    <h2>QRコードをウォレットで読み取って証明書を登録しましょう</h2>
-                </div>
+                <h1>ウォレットの証明書で追加</h1>
+                <h2>QRコードをウォレットで読み取って証明書を登録しましょう</h2>
                 <div>
                     <QRCodeGenerator
                         renderingData={this.props.data}
@@ -34,7 +29,7 @@ export default class ProveAttribute extends React.Component<IProps, IState> {
                     />
                 </div>
             </div>
-        )
+        );
     }
-
 }
+
