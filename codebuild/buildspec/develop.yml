@@ -15,6 +15,7 @@ phases:
             - \rm -r *
             - git clone https://github.com/matrix-org/matrix-js-sdk.git
             - cd matrix-js-sdk
+            - git checkout 0c7342cb20c51d049997597b5b96de1744bd7b66
             - yarn link
             - yarn install
             - cd ../
@@ -28,6 +29,7 @@ phases:
         commands:
             - git clone https://github.com/element-hq/element-web.git
             - cd element-web
+            - git checkout 2ee082652a1856e3fe22c698a6ae731d005c7004
             - yarn link matrix-js-sdk
             - yarn link matrix-react-sdk
             - yarn install
