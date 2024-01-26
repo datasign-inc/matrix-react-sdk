@@ -340,6 +340,48 @@ async function getUserIdFromAccessToken(
     }
 }
 
+export function attemptTokenLoginForSiopv2(
+    loginToken: string,
+    defaultDeviceDisplayName?: string,
+    fragmentAfterLogin?: string,
+): Promise<boolean> {
+    const homeserver = localStorage.getItem(SSO_HOMESERVER_URL_KEY);
+    const identityServer = localStorage.getItem(SSO_ID_SERVER_URL_KEY) ?? undefined;
+
+    if (!homeserver) {
+        logger.warn("Cannot log in with token: can't determine HS URL to use");
+        onFailedDelegatedAuthLogin(_t("auth|sso_failed_missing_storage"));
+        return Promise.resolve(false);
+    }
+    return sendLoginRequest(homeserver, identityServer, "m.login.token", {
+        token: loginToken,
+        initial_device_display_name: defaultDeviceDisplayName,
+    })
+        .then(async function (creds) {
+            await onSuccessfulDelegatedAuthLogin(creds);
+            return true;
+        })
+        .catch((error) => {
+            const tryAgainCallback: TryAgainFunction = () => {
+                const cli = createClient({
+                    baseUrl: homeserver,
+                    idBaseUrl: identityServer,
+                });
+                const idpId = localStorage.getItem(SSO_IDP_ID_KEY) || undefined;
+                PlatformPeg.get()?.startSingleSignOn(cli, "sso", fragmentAfterLogin, idpId, SSOAction.LOGIN);
+            };
+            onFailedDelegatedAuthLogin(
+                messageForLoginError(error, {
+                    hsUrl: homeserver,
+                    hsName: homeserver,
+                }),
+                tryAgainCallback,
+            );
+            logger.error("Failed to log in with SIOPv2/login token:", error);
+            return false;
+        });
+}
+
 /**
  * @param {QueryDict} queryParams    string->string map of the
  *     query-parameters extracted from the real query-string of the starting
