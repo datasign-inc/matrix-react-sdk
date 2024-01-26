@@ -42,6 +42,7 @@ import { UIFeature } from "../../../settings/UIFeature";
 import { ModuleRunner } from "../../../modules/ModuleRunner";
 import { Icon as AskToJoinIcon } from "../../../../res/img/element-icons/ask-to-join.svg";
 import Field from "../elements/Field";
+import VerifiedAttributes from "../settings/attribute_verification/VerifiedAttributes";
 
 const MemberEventHtmlReasonField = "io.element.html_reason";
 
@@ -662,6 +663,20 @@ export default class RoomPreviewBar extends React.Component<IProps, IState> {
                 subTitle = [subTitle];
             }
             subTitleElements = subTitle.map((t, i) => <p key={`subTitle${i}`}>{t}</p>);
+        }
+
+        if (Array.isArray(subTitleElements) && subTitleElements.length > 1) {
+            const inviteMember = this.getInviteMember();
+            if (inviteMember) {
+                subTitleElements.splice(1, 0,
+                    <VerifiedAttributes
+                        key={inviteMember.userId}
+                        user_id={inviteMember.userId}
+                        deletable={false}
+                        countOnly={false}
+                    />
+                )
+            }
         }
 
         let titleElement;
