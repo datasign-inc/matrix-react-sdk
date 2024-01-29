@@ -41,7 +41,11 @@ const showPickerDialog = (
 };
 
 const onHelpClick = (): void => {
-    const brand = SdkConfig.get().brand;
+    // workaround
+    // 適切な方法でアプリ名を取得する
+    // const brand = SdkConfig.get().brand;
+    const brand = "OWND Messenger"
+
     Modal.createDialog(
         InfoDialog,
         {

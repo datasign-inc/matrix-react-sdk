@@ -1998,11 +1998,13 @@ export default class MatrixChat extends React.PureComponent<IProps, IState> {
             subtitle = `${this.subTitleStatus} ${subtitle}`;
         }
 
-        const title = `${SdkConfig.get().brand} ${subtitle}`;
-
-        if (document.title !== title) {
-            document.title = title;
-        }
+        // workaround
+        // 適切な方法でbrandを取得する
+        // const title = `${SdkConfig.get().brand} ${subtitle}`;
+        document.title = "OWND Messenger"
+        // if (document.title !== title) {
+        //     document.title = title;
+        // }
     }
 
     private onUpdateStatusIndicator = (notificationState: SummarizedNotificationState, state: SyncState): void => {
