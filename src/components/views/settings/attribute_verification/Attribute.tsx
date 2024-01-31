@@ -8,7 +8,7 @@ import AttributeDetail from "./AttributeDetail";
 import {Claims, IssuerInfoClaims} from "./VerifiedAttributes";
 
 
-export type VPType = "ageOver13" | "affiliation"
+export type VPType = "ageOver13" | "affiliation" | "joinConference"
 
 export interface AttributeProp {
     vp_type: VPType;
@@ -57,6 +57,8 @@ export default class Attribute extends React.Component<AttributeProp, IState> {
                 return claims["$.division"]
             case "ageOver13":
                 return description
+            case "joinConference":
+                return `${description}（${claims["$.vc.credentialSubject.name"]}）`
             default:
                 return description
         }
