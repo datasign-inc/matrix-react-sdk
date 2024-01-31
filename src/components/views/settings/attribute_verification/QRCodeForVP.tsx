@@ -23,7 +23,8 @@ export default class QRCodeForVp extends React.Component<IProps, {}> {
                         renderingData={this.props.data}
                         pollingUri={this.props.pollingUri}
                         callback={async (data: any) => {
-                            console.log("vp callback called!!!!")
+                            // todo: close the dialog
+                            console.log("vp callback called!")
                         }}
                         showFromBeginning={true}
                     />
