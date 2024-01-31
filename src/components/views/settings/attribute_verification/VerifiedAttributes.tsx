@@ -48,7 +48,8 @@ interface VerifiedAttributeResponse {
 
 const SUPPORTED_VERIFICATION = [
     "/_matrix/client/v3/verify_by_server/ageOver13",
-    "/_matrix/client/v3/verify_by_server/affiliation"
+    "/_matrix/client/v3/verify_by_server/affiliation",
+    "/_matrix/client/v3/verify_by_server/joinConference",
 ]
 
 export default class VerifiedAttributes extends React.Component<IProps, IState> {
@@ -104,15 +105,15 @@ export default class VerifiedAttributes extends React.Component<IProps, IState> 
                 const mainClaims = verified_data[num].main_claims
                 const allClaims = verified_data[num].all_claims
                 const issuerInfo = verified_data[num].issuer_info
-                result.push({
-                    vp_type: vp_type,
-                    description: description_ja,
-                    num: num,
-                    main_claims: mainClaims,
-                    all_claims: allClaims,
-                    issuer_info: issuerInfo,
-                    deletable: this.props.deletable,
-                })
+                    result.push({
+                        vp_type: vp_type,
+                        description: description_ja,
+                        num: num,
+                        main_claims: mainClaims,
+                        all_claims: allClaims,
+                        issuer_info: issuerInfo,
+                        deletable: this.props.deletable,
+                    })
             }
             }
         )
