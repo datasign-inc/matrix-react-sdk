@@ -94,7 +94,7 @@ export default class QRCodeGenerator extends Component<IProps, IState> {
     private renderQRCode(): ReactNode {
         if (this.state.showQRCode) {
             this.doPolling = true;
-            return <QRCode value={this.props.renderingData} />;
+            return <QRCode value={this.props.renderingData} size={256} />;
         }
         return null;
     }
