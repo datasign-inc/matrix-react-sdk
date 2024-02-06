@@ -10,6 +10,8 @@ interface IProps {
     user_id: string;
     deletable: boolean;
     countOnly: boolean;
+    shouldRedraw?: boolean;
+    resetShouldRedraw?: () => void;
 }
 
 interface IState {
@@ -66,7 +68,7 @@ export default class VerifiedAttributes extends React.Component<IProps, IState> 
     }
 
     public async componentDidUpdate(prevProps: IProps) {
-        if (prevProps.user_id !== this.props.user_id) {
+        if ((prevProps.user_id !== this.props.user_id)||(this.props.shouldRedraw && !prevProps.shouldRedraw)){
             await this.retrieveVerifiedAttributes();
         }
     }
@@ -91,6 +93,9 @@ export default class VerifiedAttributes extends React.Component<IProps, IState> 
                 }
             }
             this.setState({ verifiedAttributes: attributes, isLoading: false});
+            if (this.props?.resetShouldRedraw){
+                this.props.resetShouldRedraw()
+            }
         }catch(error){
             console.error("Error fetching data:", error);
             this.setState({ isLoading: false });

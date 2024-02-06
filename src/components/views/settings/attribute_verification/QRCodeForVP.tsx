@@ -5,6 +5,7 @@ import QRCodeGenerator from "../../auth/QRCodeGenerator";
 interface IProps {
     data: string
     pollingUri: string
+    credentialAdded: () => void
 }
 
 export default class QRCodeForVp extends React.Component<IProps, {}> {
@@ -23,8 +24,7 @@ export default class QRCodeForVp extends React.Component<IProps, {}> {
                         renderingData={this.props.data}
                         pollingUri={this.props.pollingUri}
                         callback={async (data: any) => {
-                            // todo: close the dialog
-                            console.log("vp callback called!")
+                            this.props.credentialAdded()
                         }}
                         showFromBeginning={true}
                     />

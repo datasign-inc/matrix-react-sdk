@@ -1,6 +1,6 @@
 import React from "react";
 
-import Modal from "../../../../Modal";
+import Modal, {IHandle} from "../../../../Modal";
 import QRCodeForVp from "./QRCodeForVP";
 import {MatrixClientPeg} from "../../../../MatrixClientPeg";
 import {getData} from "./util";
@@ -18,11 +18,19 @@ interface VPRequest {
 
 interface IProps {
     supportedCertificates: Certificate[];
+    credentialAdded: () => void
 }
 
-export default class SelectAttribute extends React.Component<IProps, {}> {
+interface IState {
+    modal: IHandle<any> | null
+}
+
+export default class SelectAttribute extends React.Component<IProps, IState> {
     public constructor(props: IProps) {
         super(props);
+        this.state  = {
+            modal: null
+        }
     }
 
     private createVpUri = (parameters: VPRequest): string => {
@@ -41,11 +49,20 @@ export default class SelectAttribute extends React.Component<IProps, {}> {
             if (vpRequest) {
                 const pollingUri = vpRequest.polling_uri;
                 const vpUri = this.createVpUri(vpRequest)
-                Modal.createDialog(
+                const modal = Modal.createDialog(
                     QRCodeForVp,
-                    {data: vpUri,
-                        pollingUri: pollingUri}
+                    {
+                        data: vpUri,
+                        pollingUri: pollingUri,
+                        credentialAdded: () => {
+                            if (this.state.modal) {
+                                this.state.modal.close() // close the QRCodeForVp modal
+                                this.props.credentialAdded() // close SelectAttribute modal
+                            }
+                        }
+                    }
                 )
+                this.setState({modal})
             }
         }
     }
@@ -60,12 +77,12 @@ export default class SelectAttribute extends React.Component<IProps, {}> {
                 <div style={{ display: 'flex', flexDirection: 'row' }}>
                     <div style={{ flex: 1 , display: 'flex', flexDirection: 'column', justifyContent: 'center'}}>
                         {this.props.supportedCertificates.slice(0, this.props.supportedCertificates.length / 2).map((button) => (
-                            <button onClick={() => {this.showQrCodeModal(button.path)}} style={{margin: "16px"}}>{button.label}</button>
+                            <button onClick={() => {this.showQrCodeModal(button.path)}} style={{margin: "16px"}} key={button.path}>{button.label}</button>
                         ))}
                     </div>
                     <div style={{ flex: 1 , display: 'flex', flexDirection: 'column', justifyContent: 'center'}}>
                         {this.props.supportedCertificates.slice(this.props.supportedCertificates.length / 2).map((button) => (
-                            <button onClick={() => {this.showQrCodeModal(button.path)}} style={{margin: "16px"}}>{button.label}</button>
+                            <button onClick={() => {this.showQrCodeModal(button.path)}} style={{margin: "16px"}} key={button.path}>{button.label}</button>
                         ))}
                     </div>
                 </div>
