@@ -1,13 +1,15 @@
 import React from "react";
 
 import VerificationMark from "./VerificationMark";
-import Modal from "../../../../Modal";
+import Modal, {IHandle} from "../../../../Modal";
 import SelectAttribute from "./SelectAttribute";
 
 interface IProps {
+   credentialAdded: () => void
 }
 
 interface IState {
+    modal: IHandle<any> | null
 }
 
 const SUPPORTED_CERTIFICATES = [
@@ -20,13 +22,24 @@ export default class AddVerifiedAttribute extends React.Component<IProps, IState
 
     public constructor(props: IProps) {
         super(props);
+        this.state  = {
+            modal: null
+        }
     }
 
     private addCertificate = () => {
-        Modal.createDialog(
+        const modal = Modal.createDialog(
            SelectAttribute,
-            {supportedCertificates: SUPPORTED_CERTIFICATES}
+            {supportedCertificates: SUPPORTED_CERTIFICATES,
+                credentialAdded: () => {
+                    if (this.state.modal) {
+                        this.state.modal.close() // close SelectAttribute modal
+                        this.props.credentialAdded() // to update VerifiedAttributes
+                    }
+                }
+            }
         )
+        this.setState({modal})
     }
 
     render() {
