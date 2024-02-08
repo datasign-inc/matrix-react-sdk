@@ -54,7 +54,7 @@ export default class Attribute extends React.Component<AttributeProp, IState> {
         const claims = this.props.main_claims
         switch(vp_type){
             case "affiliation":
-                return claims["$.division"]
+                return claims["$.companyName"]
             case "ageOver13":
                 return description
             case "joinConference":
