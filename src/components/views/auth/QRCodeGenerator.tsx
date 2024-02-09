@@ -103,7 +103,7 @@ export default class QRCodeGenerator extends Component<IProps, IState> {
         if (!this.state.showQRCode) {
             return (
                 <button className="mx_Login_submit" onClick={this.handleButtonClick}>
-                    {this.props.registration ? _t("action|wallet_register") : "ウォレットでサインイン"}
+                    {this.props.registration ? _t("action|wallet_register") : _t("action|wallet_signin")}
                 </button>
             );
         }
