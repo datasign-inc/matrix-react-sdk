@@ -84,6 +84,7 @@
         "refresh": "再読み込み",
         "register": "登録",
         "wallet_register": "ウォレットで作成",
+        "wallet_signin": "ウォレットでサインイン",
         "reject": "拒否",
         "remove": "削除",
         "rename": "表示名を変更",

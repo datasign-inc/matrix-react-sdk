@@ -88,6 +88,7 @@
         "refresh": "Refresh",
         "register": "Register",
         "wallet_register": "Register with wallet",
+        "wallet_signin": "Sign in with wallet",
         "reject": "Reject",
         "reload": "Reload",
         "remove": "Remove",
