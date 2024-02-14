@@ -30,7 +30,7 @@ import SpellCheckSettings from "../../SpellCheckSettings";
 import AccessibleButton from "../../../elements/AccessibleButton";
 import DeactivateAccountDialog from "../../../dialogs/DeactivateAccountDialog";
 import PlatformPeg from "../../../../../PlatformPeg";
-import Modal from "../../../../../Modal";
+import Modal, {IHandle} from "../../../../../Modal";
 import dis from "../../../../../dispatcher/dispatcher";
 import { Service, ServicePolicyPair, startTermsFlow } from "../../../../../Terms";
 import IdentityAuthClient from "../../../../../IdentityAuthClient";
@@ -58,6 +58,7 @@ import Heading from "../../../typography/Heading";
 import InlineSpinner from "../../../elements/InlineSpinner";
 import { ThirdPartyIdentifier } from "../../../../../AddThreepid";
 import { SDKContext } from "../../../../../contexts/SDKContext";
+import DeactivationConfirm from "./DeactivationConfirm";
 
 interface IProps {
     closeSettingsFn: () => void;
@@ -90,6 +91,7 @@ interface IState {
     idServerName?: string;
     externalAccountManagementUrl?: string;
     canMake3pidChanges: boolean;
+    confirmModal: IHandle<any> | null;
 }
 
 export default class GeneralUserSettingsTab extends React.Component<IProps, IState> {
@@ -122,6 +124,7 @@ export default class GeneralUserSettingsTab extends React.Component<IProps, ISta
             loading3pids: true, // whether or not the emails and msisdns have been loaded
             canChangePassword: false,
             canMake3pidChanges: false,
+            confirmModal: null
         };
 
         this.dispatcherRef = dis.register(this.onAction);
@@ -315,11 +318,28 @@ export default class GeneralUserSettingsTab extends React.Component<IProps, ISta
     };
 
     private onDeactivateClicked = (): void => {
-        Modal.createDialog(DeactivateAccountDialog, {
-            onFinished: (success) => {
-                if (success) this.props.closeSettingsFn();
+        const confirmModal = Modal.createDialog(DeactivationConfirm,
+            {
+                onConfirm: () => {
+                    Modal.createDialog(DeactivateAccountDialog, {
+                        onFinished: (success) => {
+                            if (success) {
+                                this.props.closeSettingsFn();
+                            }
+                            if (this.state.confirmModal){
+                               this.state.confirmModal.close()
+                            }
+                        },
+                    });
+                },
+                onClose: () => {
+                    if(this.state.confirmModal){
+                        this.state.confirmModal.close()
+                    }
+                },
             },
-        });
+            )
+        this.setState({confirmModal})
     };
 
     private renderAccountSection(): JSX.Element {
